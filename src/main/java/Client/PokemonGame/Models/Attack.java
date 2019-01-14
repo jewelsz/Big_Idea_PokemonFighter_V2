@@ -5,21 +5,16 @@ import java.util.Random;
 public class Attack
 {
     private String name;
-    private  int averageDamage;
     private  int damage;
 
-    public Attack(String name, int averageDamage)
+    public Attack(String name, int damage)
     {
         this.name = name;
-        this.averageDamage = averageDamage;
+        this.damage = damage;
     }
 
-    //      Creates a random for the damage
-//      Use every time the player attacks
-    public int calculateDamage()
-    {
-//
-        return averageDamage;
+    public int getDamage() {
+        return damage;
     }
 
     public String toString()

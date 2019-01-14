@@ -151,7 +151,7 @@ public class GUIController implements Observer
         if (communicator != null)
         {
             MessageContentCreator msg = new MessageContentCreator();
-            msg.setDmg(attack.calculateDamage());
+            msg.setDmg(attack.getDamage());
             msg.setMessageType(CommunicatorWebSocketType.ATTACK);
             String content = gson.toJson(msg);
             CommunicatorMessage message = new CommunicatorMessage();

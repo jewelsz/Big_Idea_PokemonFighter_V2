@@ -20,7 +20,7 @@ public class GameController
     }
     public void gotAttacked(Attack attack)
     {
-        thisPlayer.getSummonedPokemon().gotHit(attack.calculateDamage());
+        thisPlayer.getSummonedPokemon().gotHit(attack.getDamage());
         thisPlayer.checkPokemonHealth();
     }
 

@@ -65,16 +65,4 @@ public class Pokemon
         return isDead;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setType(ElementTypeEnum type) {
-        this.type = type;
-    }
-
-    public void setHealth(int health) {
-        this.health = health;
-    }
-
 }
