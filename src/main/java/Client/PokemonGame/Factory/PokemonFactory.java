@@ -40,6 +40,11 @@ public class PokemonFactory
         createdPokemon.add(new Pokemon("Ekans", ElementTypeEnum.POISON));
         createdPokemon.add(new Pokemon("Muk", ElementTypeEnum.POISON));
 
+        for(Pokemon p : createdPokemon)
+        {
+            p.getAttacks();
+        }
+
     }
 
     //Get 6 random pokemon

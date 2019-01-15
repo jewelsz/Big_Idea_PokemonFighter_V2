@@ -16,8 +16,8 @@
       <Label fx:id="lblpName1" layoutX="126.0" layoutY="92.0" text="**" />
       <Label layoutX="35.0" layoutY="128.0" text="Health:" />
       <Label fx:id="lblHealth1" layoutX="126.0" layoutY="128.0" text="0" />
-      <Button layoutX="95.0" layoutY="332.0" mnemonicParsing="false" onAction="#attackOpponent" text="Attack opponent" />
-      <Button layoutX="172.0" layoutY="630.0" mnemonicParsing="false" onAction="#showPokemon" text="Show Pokemon" />
+      <Button fx:id="btnAttack" layoutX="95.0" layoutY="332.0" mnemonicParsing="false" onAction="#attackOpponent" text="Attack opponent" />
+      <Button layoutX="33.0" layoutY="632.0" mnemonicParsing="false" onAction="#showPokemon" text="Show Pokemon" />
       <Text fx:id="lblpName2" layoutX="383.0" layoutY="108.0" strokeType="OUTSIDE" strokeWidth="0.0" text="**" />
       <Text fx:id="lblHealth2" layoutX="383.0" layoutY="144.0" strokeType="OUTSIDE" strokeWidth="0.0" text="0" />
       <Label layoutX="282.0" layoutY="92.0" text="Pokemon:" />
@@ -25,9 +25,13 @@
       <Label layoutX="68.0" layoutY="32.0" text="You" />
       <Label layoutX="312.0" layoutY="32.0" text="Opponent" />
       <ListView fx:id="listPokemon" layoutX="27.0" layoutY="413.0" prefHeight="154.0" prefWidth="198.0" />
-      <Button layoutX="95.0" layoutY="575.0" mnemonicParsing="false" onAction="#switchToSelectedPokemon" text="Switch Pokemon" />
+      <Button fx:id="btnSwitchPokemon" layoutX="95.0" layoutY="575.0" mnemonicParsing="false" onAction="#switchToSelectedPokemon" text="Switch Pokemon" />
       <ListView fx:id="listAttacks" layoutX="26.0" layoutY="193.0" prefHeight="134.0" prefWidth="198.0" />
       <Label layoutX="35.0" layoutY="162.0" text="Attacks" />
       <Label layoutX="33.0" layoutY="380.0" text="Pokemon" />
+      <Button layoutX="234.0" layoutY="433.0" mnemonicParsing="false" onAction="#savePokemon" text="Save" />
+      <Button layoutX="234.0" layoutY="485.0" mnemonicParsing="false" onAction="#removePokemon" text="Remove" />
+      <Button layoutX="234.0" layoutY="536.0" mnemonicParsing="false" onAction="#updateHealth" text="Update" />
+      <Button layoutX="262.0" layoutY="632.0" mnemonicParsing="false" onAction="#printAllSavedPokemon" prefHeight="31.0" prefWidth="172.0" text="Print saved pokemon" />
     </children>
 </AnchorPane>

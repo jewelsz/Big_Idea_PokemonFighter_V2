@@ -65,4 +65,7 @@ public class Pokemon
         return isDead;
     }
 
+    public void setHealth(int health) {
+        this.health = health;
+    }
 }

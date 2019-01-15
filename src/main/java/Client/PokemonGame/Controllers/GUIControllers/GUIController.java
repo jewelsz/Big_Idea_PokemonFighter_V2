@@ -1,12 +1,12 @@
 package Client.PokemonGame.Controllers.GUIControllers;
 
-import Client.Communicator.Communicator;
-import Client.Communicator.CommunicatorClientWebSocket;
-import Client.Messages.CommunicatorMessage;
-import Client.Messages.CommunicatorWebSocketType;
-import Client.Messages.MessageContentCreator;
+import Client.REST.RESTCommunicator;
+import Client.WebSocket.Communicator.Communicator;
+import Client.WebSocket.Communicator.CommunicatorClientWebSocket;
+import Client.WebSocket.Messages.CommunicatorMessage;
+import Client.WebSocket.Messages.CommunicatorWebSocketType;
+import Client.WebSocket.Messages.MessageContentCreator;
 import Client.PokemonGame.Controllers.GameController;
-import Client.PokemonGame.Controllers.MainController;
 import Client.PokemonGame.Messages.MessageProcessor;
 import Client.PokemonGame.Models.Attack;
 import Client.PokemonGame.Models.Pokemon;
@@ -16,9 +16,10 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -27,19 +28,18 @@ import java.util.Observer;
 //------------------------------//
 public class GUIController implements Observer
 {
-    public Pokemon myPokemon;
     private MessageProcessor messageProcessor;
-    private MainController mainController;
-    private GameController gameController = new GameController();
+    private GameController gameController;
+    private static RESTCommunicator restCommunicator;
 
     @FXML
     private Label lblpName1, lblHealth1;
     @FXML
-    private TextField tbMsg;
-    @FXML
-    private Text txtArea, lblHealth2, lblpName2;
+    private Text lblHealth2, lblpName2;
     @FXML
     private ListView listPokemon, listAttacks;
+    @FXML
+    private Button btnSwitchPokemon, btnAttack;
 
     // Communicate with other white boards
     public Communicator communicator = null;
@@ -56,10 +56,7 @@ public class GUIController implements Observer
         currentProperty = properties[0];
         messageProcessor = new MessageProcessor(this);
 
-    }
-
-    public void setMainController(MainController mainController) {
-        this.mainController = mainController;
+        restCommunicator = new RESTCommunicator();
     }
 
     @Override
@@ -70,7 +67,9 @@ public class GUIController implements Observer
         messageProcessor.processMessage(content);
     }
 
-
+    public void setGameController(GameController gameController) {
+        this.gameController = gameController;
+    }
 
     public void updateLabels(Pokemon pokemon)
     {
@@ -80,33 +79,39 @@ public class GUIController implements Observer
 
                 lblpName2.setText(pokemon.getName());
                 lblHealth2.setText(String.valueOf(pokemon.getHealth()));
-                lblpName1.setText(myPokemon.getName());
-                lblHealth1.setText(String.valueOf(myPokemon.getHealth()));
+                lblpName1.setText(gameController.getThisPlayer().getSummonedPokemon().getName());
+                lblHealth1.setText(String.valueOf(gameController.getThisPlayer().getSummonedPokemon().getHealth()));
             }
         });
-        System.out.println("In update Label methode");
-        System.out.println(String.valueOf(myPokemon.getHealth()));
-    }
-
-    public void sendMessage()
-    {
-        broadcastText(tbMsg.getText());
     }
 
     public void attackOpponent()
     {
         broadcastDamage((Attack)listAttacks.getSelectionModel().getSelectedItem());
+        gameController.setPlayerTurn(false);
+        //switchButtonVisible();
     }
 
     public void showPokemon()
     {
-        broadcastPokemon(myPokemon);
+        broadcastPokemon(gameController.getThisPlayer().getSummonedPokemon());
+        if(gameController.getThisPlayer().getName() == properties[0])
+        {
+            communicator.unsubscribe(properties[0]);
+            communicator.subscribe(properties[1]);
+        }
+        else
+        {
+            communicator.unsubscribe(properties[1]);
+            communicator.subscribe(properties[0]);
+        }
     }
 
     public void gotAttacked(int dmg)
     {
         gameController.gotAttacked((Attack)listAttacks.getSelectionModel().getSelectedItem());
-
+        gameController.setPlayerTurn(true);
+        //switchButtonVisible();
         Platform.runLater(new Runnable(){
             @Override
             public void run() {
@@ -115,23 +120,24 @@ public class GUIController implements Observer
                 fillPokemonList();
                 summonPokemonLbl();
                 refreshHealthLabel();
-                broadcastPokemon(myPokemon);
+                broadcastPokemon(gameController.getThisPlayer().getSummonedPokemon());
+
             }
         });
     }
 
     // Send event to other players that are registered
-    private void broadcastText(String msg) {
-        if (communicator != null)
-        {
-            String content = gson.toJson(msg);
-            CommunicatorMessage message = new CommunicatorMessage();
-            message.setProperty(currentProperty);
-            //Content is the class I want to send
-            message.setContent(content);
-            communicator.update(message);
-        }
-    }
+//    private void broadcastText(String msg) {
+//        if (communicator != null)
+//        {
+//            String content = gson.toJson(msg);
+//            CommunicatorMessage message = new CommunicatorMessage();
+//            message.setProperty(currentProperty);
+//            //Content is the class I want to send
+//            message.setContent(content);
+//            communicator.update(message);
+//        }
+//    }
 
     private void broadcastPokemon(Pokemon pokemon)
     {if (communicator != null)
@@ -165,7 +171,8 @@ public class GUIController implements Observer
     {
         gameController.getThisPlayer().setSummonedPokemon((Pokemon)listPokemon.getSelectionModel().getSelectedItem());
         summonPokemonLbl();
-
+        gameController.setPlayerTurn(false);
+        //switchButtonVisible();
         broadcastPokemon(gameController.getThisPlayer().getSummonedPokemon());
     }
 
@@ -180,33 +187,33 @@ public class GUIController implements Observer
     public void p1Clicked ()
     {
 
-        currentProperty = "player1";
-        myPokemon = gameController.createPlayer(currentProperty);
+        currentProperty = properties[0];
+        Pokemon myPokemon = gameController.createPlayer(currentProperty);
         communicator.register(currentProperty);
 
-        communicator.unsubscribe(properties[0]);
-        communicator.subscribe(properties[1]);
-
+        gameController.setPlayerTurn(true);
             lblpName1.setText(myPokemon.getName());
             lblHealth1.setText(String.valueOf(myPokemon.getHealth()));
             fillPokemonList();
             fillAttackList();
+
+            //switchButtonVisible();
     }
 
     public void p2Clicked ()
     {
-        currentProperty = "player2";
-        myPokemon = gameController.createPlayer(currentProperty);
+        currentProperty = properties[1];
+        Pokemon myPokemon = gameController.createPlayer(currentProperty);
         communicator.register(currentProperty);
 
-        communicator.unsubscribe(properties[1]);
-        communicator.subscribe(properties[0]);
+        gameController.setPlayerTurn(false);
 
         lblpName1.setText(myPokemon.getName());
         lblHealth1.setText(String.valueOf(myPokemon.getHealth()));
-
         fillPokemonList();
         fillAttackList();
+
+        //switchButtonVisible();
     }
 
     private void refreshHealthLabel()
@@ -236,5 +243,69 @@ public class GUIController implements Observer
         listAttacks.getItems().addAll(gameController.getThisPlayer().getSummonedPokemon().getAttacks());
     }
 
+    private void switchButtonVisible()
+    {
+        if(gameController.isPlayerTurn())
+        {
+            btnAttack.setVisible(true);
+            btnSwitchPokemon.setVisible(true);
+        }
+        else
+        {
+            btnSwitchPokemon.setVisible(false);
+            btnAttack.setVisible(false);
+        }
     }
+
+    public void savePokemon()
+    {
+        Platform.runLater(new Runnable(){
+        @Override
+        public void run() {
+
+
+            restCommunicator.addPokemon((Pokemon)listPokemon.getSelectionModel().getSelectedItem());
+            }
+        });
+    }
+
+    public void removePokemon()
+    {
+        Platform.runLater(new Runnable(){
+        @Override
+        public void run() {
+
+            Pokemon pokemon = (Pokemon)listPokemon.getSelectionModel().getSelectedItem();
+            restCommunicator.removePet(pokemon.getName());
+        }
+    });
+    }
+
+    public void updateHealth()
+    {
+        Platform.runLater(new Runnable(){
+        @Override
+        public void run() {
+
+            restCommunicator.changeHealth((Pokemon)listPokemon.getSelectionModel().getSelectedItem());
+        }
+    });
+    }
+
+    public void printAllSavedPokemon()
+    {
+        Platform.runLater(new Runnable(){
+        @Override
+        public void run() {
+
+            List<Pokemon> savedPokemon = restCommunicator.getAllPokemon();
+            for(Pokemon p : savedPokemon)
+            {
+                System.out.println(p);
+            }
+        }
+    });
+    }
+
+}
 

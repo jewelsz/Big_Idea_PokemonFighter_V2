@@ -39,6 +39,7 @@ public class AttackFactory
         }
     }
 
+
     public ArrayList<Attack> getAttacks() {
         return attacks;
     }

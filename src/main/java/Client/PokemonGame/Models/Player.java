@@ -10,7 +10,6 @@ public class Player
     private ArrayList<Pokemon> allPokemon;
     private Pokemon summonedPokemon;
     private boolean isDefeated;
-    //private boolean turn;
 
     public Player(String name)
     {
@@ -75,4 +74,7 @@ public class Player
         this.summonedPokemon = summonedPokemon;
     }
 
+    public String getName() {
+        return name;
+    }
 }

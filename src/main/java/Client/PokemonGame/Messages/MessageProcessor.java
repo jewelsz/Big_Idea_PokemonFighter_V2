@@ -1,6 +1,6 @@
 package Client.PokemonGame.Messages;
 
-import Client.Messages.MessageContentCreator;
+import Client.WebSocket.Messages.MessageContentCreator;
 import Client.PokemonGame.Controllers.GUIControllers.GUIController;
 import Client.PokemonGame.Controllers.GameController;
 import Client.PokemonGame.Models.Pokemon;

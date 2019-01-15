@@ -1,5 +1,6 @@
 package Client.PokemonGame.Controllers.GUIControllers;
 
+import Client.PokemonGame.Controllers.GameController;
 import Client.PokemonGame.Controllers.MainController;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -16,6 +17,7 @@ public class WindowController
     private Stage primaryStage;
     private FXMLLoader loader;
     public GUIController guiController;
+    GameController gameController = new GameController();
 
     public WindowController(Stage primaryStage) {
         this.primaryStage = primaryStage;
@@ -29,8 +31,7 @@ public class WindowController
         primaryStage.setScene(new Scene(root, 600,750));
 
         guiController = loader.getController();
-        guiController.setMainController(mainController);
-
+        guiController.setGameController(gameController);
         primaryStage.show();
     }
 }

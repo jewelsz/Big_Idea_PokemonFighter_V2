@@ -11,7 +11,7 @@ public class GameController
 {
     private Player thisPlayer;
 
-    boolean playerTurn = true;
+    private boolean playerTurn = true;
 
     public Pokemon createPlayer(String name)
     {
@@ -30,5 +30,9 @@ public class GameController
 
     public boolean isPlayerTurn() {
         return playerTurn;
+    }
+
+    public void setPlayerTurn(boolean playerTurn) {
+        this.playerTurn = playerTurn;
     }
 }
